@@ -1,15 +1,19 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
+	sr "24.6.6/pkg"
 	"golang.org/x/net/html"
 )
 
-func extractLinks(url string) {
-	resp, err := http.Get(url)
+func extractLinks(url sr.SimpleNewReader) {
+
+	resp, err := http.Get(url.Data)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,7 +44,20 @@ func extractLinks(url string) {
 	visit(doc)
 }
 
+func readURLFromConsole() string {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("Введите URL: ")
+	scanner.Scan()
+	return scanner.Text()
+}
+
 func main() {
-	url := "https://example.com" // замените на нужный URL
+
+	var url sr.SimpleNewReader
+
+	input := readURLFromConsole()
+	url = *sr.NewSimpleReader(input)
+	url.CountData([]byte(input))
+	fmt.Println("Принято символов:", url.DataLen)
 	extractLinks(url)
 }
